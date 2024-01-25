@@ -175,6 +175,14 @@ class OnPolicyAlgorithm(BaseAlgorithm):
             if isinstance(self.action_space, gym.spaces.Box):
                 clipped_actions = np.clip(actions, self.action_space.low, self.action_space.high)
 
+            
+            if self.num_timesteps<=3000:
+                clipped_actions = np.array([env.envs[0].env.env.get_oracle_action()])
+                print(f"call oracle !! steps:{self.num_timesteps}")
+            elif self.num_timesteps<=10000 and self.num_timesteps>3000:
+                clipped_actions =  np.array([env.envs[0].env.env.action_space.sample()])
+                print(f"call random !! steps:{self.num_timesteps}")
+
             new_obs, rewards, dones, infos = env.step(clipped_actions)
 
             self.num_timesteps += env.num_envs
@@ -245,8 +253,9 @@ class OnPolicyAlgorithm(BaseAlgorithm):
 
         callback.on_training_start(locals(), globals())
 
-        while self.num_timesteps < total_timesteps:
 
+        while self.num_timesteps < total_timesteps:
+            
             continue_training = self.collect_rollouts(self.env, callback, self.rollout_buffer, n_rollout_steps=self.n_steps)
 
             if continue_training is False:
@@ -267,7 +276,8 @@ class OnPolicyAlgorithm(BaseAlgorithm):
                 self.logger.record("time/total_timesteps", self.num_timesteps, exclude="tensorboard")
                 self.logger.dump(step=self.num_timesteps)
 
-            self.train()
+            if self.num_timesteps > 10000:
+                self.train()
 
         callback.on_training_end()
 
