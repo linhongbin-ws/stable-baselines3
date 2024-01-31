@@ -401,7 +401,7 @@ class EvalCallback(EventCallback):
                 callback=self._log_success_callback,
             )
 
-            success_rate = np.sum(np.array(episode_lengths) == 300) / self.n_eval_episodes
+            success_rate = np.sum(np.array(episode_lengths) != 300) / self.n_eval_episodes
             score = (300 - np.array(episode_lengths)) / 300
             self.logger.record("eval_success_rate", success_rate)
             self.logger.record("eval_score", np.mean(score))
