@@ -88,7 +88,8 @@ def get_schedule_fn(value_schedule: Union[Schedule, float, int]) -> Schedule:
         # Cast to float to avoid errors
         value_schedule = constant_fn(float(value_schedule))
     else:
-        assert callable(value_schedule)
+        # assert callable(value_schedule)
+        pass
     return value_schedule
 
 
